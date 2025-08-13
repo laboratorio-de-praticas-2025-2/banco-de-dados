@@ -1,0 +1,104 @@
+%% Diagrama ER dos imóveis
+
+%% Apenas usuários com nivel 'administrador' podem cadastrar notícias, imóveis, publicidade, imagens no banner, alterar os dados da imobiliária e gravar perguntas/respostas na FAQ.
+erDiagram
+IMOBILIARIA {
+  INTEGER id PK
+  TEXT nome
+  TEXT cnpj
+  TEXT telefone
+  TEXT email
+  TEXT endereco
+  TEXT cidade
+  TEXT estado
+  TEXT site
+  INTEGER usuario_id FK
+}
+IMOVEIS {
+  INTEGER id PK
+  TEXT tipo
+  TEXT endereco
+  TEXT cidade
+  TEXT estado
+  REAL preco
+  TEXT status
+  INTEGER area
+  TEXT descricao
+  DATE data_cadastro
+  BOOLEAN murado
+  REAL latitude
+  REAL longitude
+  INTEGER usuario_id FK
+}
+CASA {
+  INTEGER id PK
+  INTEGER imovel_id FK
+  INTEGER quartos
+  INTEGER banheiros
+  INTEGER vagas
+  BOOLEAN possui_piscina
+  BOOLEAN possui_jardim
+}
+TERRENO {
+  INTEGER id PK
+  INTEGER imovel_id FK
+  TEXT tipo_terreno
+}
+USUARIO {
+  INTEGER id PK
+  TEXT nome
+  TEXT email
+  TEXT senha
+  TEXT nivel
+  TEXT celular
+}
+BLOG {
+  INTEGER id PK
+  TEXT titulo
+  TEXT conteudo
+  DATE data_publicacao
+  TEXT url_imagem
+  INTEGER usuario_id FK
+}
+PUBLICIDADE {
+  INTEGER id PK
+  TEXT titulo
+  TEXT conteudo
+  TEXT url_imagem
+  INTEGER usuario_id FK
+}
+IMAGEM_IMOVEL {
+  INTEGER id PK
+  INTEGER imovel_id FK
+  TEXT url_imagem
+  TEXT descricao
+}
+BANNER_INDEX {
+  INTEGER id PK
+  TEXT url_imagem
+  TEXT descricao
+  INTEGER usuario_id FK
+}
+RECOMENDACAO_IMOVEL {
+  INTEGER id PK
+  INTEGER usuario_id FK
+  INTEGER imovel_id FK
+  DATE data_visita
+}
+FAQ {
+  INTEGER id PK
+  TEXT pergunta
+  TEXT resposta
+  INTEGER usuario_id FK
+}
+USUARIO ||--o{ BLOG : publica
+USUARIO ||--o{ IMOVEIS : cadastra
+USUARIO ||--o{ PUBLICIDADE : cadastra
+USUARIO ||--o{ BANNER_INDEX : cadastra
+USUARIO ||--o{ IMOBILIARIA : altera
+USUARIO ||--o{ RECOMENDACAO_IMOVEL : visita
+USUARIO ||--o{ FAQ : cadastra
+IMOVEIS ||--o{ CASA : contem
+IMOVEIS ||--o{ TERRENO : contem
+IMOVEIS ||--o{ IMAGEM_IMOVEL : possui
+IMOVEIS ||--o{ RECOMENDACAO_IMOVEL : e_visitado
