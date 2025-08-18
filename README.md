@@ -8,6 +8,8 @@ Faz parte da maioria das ofertas em nuvem e é o padrão na maioria das distribu
 O projeto nasceu após a aquisição do MySQL pela Oracle Corporation.  
 Embora compartilhem muitas semelhanças — como compatibilidade e sintaxes de comando — o MariaDB é mantido como um projeto independente e de código aberto, permitindo que os usuários do MySQL migrem para o MariaDB sem complicações.
 
+## Diagrama:
+![alt text](doc/imgs/imoveis_diagrama.mmd.png)
 
 ##  Ambientes
 
@@ -32,7 +34,8 @@ password: Utilizar a senha disponibilizada pelo PM do seu produto
 ### 3. Local
 **Seu computador 😉**<br>
 ```yaml
-Para rodar localmente, basta criar um banco MySQL local e executar o script disponibilizado neste repositório.  
+Para rodar localmente, basta criar um banco MySQL local e executar o scrit
+[db_imobiliaria.sql] disponibilizado neste repositório.  
 (Iremos mantê-lo atualizado caso ocorram mudanças)
 ```
 
@@ -43,7 +46,7 @@ Para rodar localmente, basta criar um banco MySQL local e executar o script disp
 
 ## Exemplo de Conexão (HeidiSQL):
 1-Conexão:
-![alt text](image-2.png)
+![alt text](doc/imgs/image-2.png)
 2-Execução de Query:
-![alt text](image-1.png)
+![alt text](doc/imgs/image-1.png)
 
