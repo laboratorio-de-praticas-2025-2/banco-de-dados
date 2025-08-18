@@ -34,7 +34,7 @@ password: Utilizar a senha disponibilizada pelo PM do seu produto
 ### 3. Local
 **Seu computador 😉**<br>
 ```yaml
-Para rodar localmente, basta criar um banco MySQL local e executar o scrit
+Para rodar localmente, basta criar um banco MySQL local e executar o script
 [db_imobiliaria.sql] disponibilizado neste repositório.  
 (Iremos mantê-lo atualizado caso ocorram mudanças)
 ```
@@ -49,4 +49,3 @@ Para rodar localmente, basta criar um banco MySQL local e executar o scrit
 ![alt text](doc/imgs/image-2.png)
 2-Execução de Query:
 ![alt text](doc/imgs/image-1.png)
-
