@@ -1,5 +1,10 @@
 # Banco de dados (MySQL)
 
+## 📝 Recomendações Gerais:
+- As estruturas e relações de tabelas deste banco **não devem ser alteradas** sem a autorização do time de dados.
+- No ambiente de <i><b>desenvolvimento</b></i>, todos os usuários possuem acesso liberado para inserções e remoções de dados. Caso necessário, esses acessos poderão ser limitados...
+- Recomendamos que o desenvolvimento seja iniciado sempre pelo banco local, pois ele oferece maior liberdade para testes e inserções de dados, menor latência nas consultas e a possibilidade de trabalhar com dados inconsistentes ou incompletos sem impacto no ambiente principal ou de desenvolvimento.
+
 ## Diagrama:
 ![imagem do diagrama](v2/imgs/imoveis_diagrama.mmd.png)
 
@@ -30,12 +35,12 @@
 | Nome da Coluna | Tipo de Dado       | Descrição                                |
 |---------------|--------------------|-------------------------------------------|
 | id            | INT(11)           | Identificador único do imóvel            |
-| tipo          | VARCHAR(50)       | Tipo do imóvel (ex.: casa, apartamento)  |
+| tipo          | VARCHAR(50)       | Tipo do imóvel (ex.: Casa, Apartamento ou Terreno)  |
 | endereco      | VARCHAR(255)      | Endereço do imóvel (ex: Número, rua, bairro) |
 | cidade        | VARCHAR(100)      | Cidade onde o imóvel está localizado     |
 | estado        | VARCHAR(2)        | Sigla do estado                          |
 | preco         | DECIMAL(12,2)     | Preço do imóvel                          |
-| status        | VARCHAR(20)       | Status do imóvel (disponivel, indisponivel), esse campo pode ser usado para lógica de mostrar ou não o imóvel no site/mapa |
+| status        | ENUM('disponivel', 'indisponivel', 'vendido', 'locado')       | Status do imóvel, esse campo pode ser usado para lógica de mostrar ou não o imóvel no site/mapa |
 | area          | INT(11)           | Área do imóvel em m²                     |
 | descricao     | TEXT              | Descrição do imóvel                      |
 | data_cadastro | DATE              | Data de cadastro do imóvel               |
@@ -43,7 +48,8 @@
 | latitude      | DECIMAL(10,7)     | Latitude da localização                  |
 | longitude     | DECIMAL(10,7)     | Longitude da localização                 |
 | usuario_id    | INT(11)           | ID do usuário que cadastrou o imóvel (Apenas administradores cadastram imóveis)    |
-| tipo_negociacao   | ENUM('venda', 'aluguel') | Tipo de proposta do imóvel (Está disponível para venda ou aluguel) - Em caso de um imóvel ser oferecido como ambas opções deve-se cadastrar duas vezes e conectá-lo com a mesma tabela de casa ou de terreno |
+| tipo_negociacao     | ENUM('venda', 'aluguel') | Tipo de proposta do imóvel (Está disponível para venda ou aluguel) - Em caso de um imóvel ser oferecido como ambas opções deve-se cadastrar duas vezes e conectá-lo com a mesma tabela de casa ou de terreno |
+| data_update_status  | TIMESTAMP | Campo guarda a data da ocorrência de update no atributo status do imóvel. Exemplo: Ao atualizar para "vendido" vai ficar registrado que foi vendido no dia do update, o mesmo funciona se mudar para locado, disponivel ou indisponivel (A atualização do campo DATA_UPDATE_STATUS é feita de forma automática no banco por meio de um trigger que observa o campo STATUS)
 
 </details>
 
@@ -108,7 +114,7 @@
 | url_imagem     | VARCHAR(255)   | Nome da Imagem + extensão (ex: 7ac66c0f1484d64.png) - Deve-se usar um algoritmo de hash (ex: MD5) para garantir que os nomes de imagens não sejam iguais no momento de salvar - As imagens serão guardadas em um mesmo diretório, o banco só guarda o nome único hasheado e o caminho padrão ficará definido no back-end                       |
 | descricao      | VARCHAR(255)   | Descrição                           |
 | usuario_id     | INT(11)        | ID do usuário que cadastrou o banner (Apenas administradores podem cadastrar)|
-| ativo          | TINYINT(1)     | Indica se o banner deve aparecer ou não no carrossel (1 = sim) |
+| ativo          | TINYINT(1)     | Indica se o banner deve aparecer ou não no carrossel da página (0 = não, 1 = sim) |
 
 </details>
 
@@ -145,8 +151,8 @@
 | Nome da Coluna | Tipo de Dado | Descrição                           |
 |----------------|--------------|-------------------------------------|
 | id             | INT(11)      | Identificador único da pergunta     |
-| pergunta       | TEXT         | Dúvida comum                        |
-| resposta       | TEXT         | Resposta do questionamento          |
+| pergunta       | TEXT         | Dúvida                         |
+| resposta       | TEXT         | Resposta      |
 | usuario_id     | INT(11)      | ID do usuário Responsável (Apenas Administradores podem cadastrar as perguntas e respostas)  |
 
 </details>
@@ -163,7 +169,7 @@
 | id             | INT(11)      | Identificador único da recomendação |
 | usuario_id     | INT(11)      | ID do usuário que recebeu a recomendação |
 | imovel_id      | INT(11)      | ID do imóvel recomendado            |
-| data_visita    | DATE         | Data prevista ou realizada da visita|
+| data_visita    | DATE         | Data da visita na página do imóvel  |
 
 </details>
 
@@ -207,10 +213,10 @@
 
 *Tabela para armazenar as postagens do blog*
 
-##  Ambientes
+## Ambientes
 
 ### 1. Produção
-**AlwaysData**<br>
+Solução de hospedagem: **AlwaysData**<br>
 Strings de conexão 🚨(Acesso Restrito):
 ```yaml
 database: lpbortone_bd_prod
@@ -219,7 +225,7 @@ port: 3306
 ```
 
 ### 2. Desenvolvimento
-**AlwaysData**<br>
+Solução de hospedagem: **AlwaysData**<br>
 Strings de conexão:
 ```yaml
 database: lp-imobiliaria_dev
@@ -236,11 +242,19 @@ Para rodar localmente, basta criar um banco MySQL local e executar o script
 [db_imobiliaria_Vx_x.sql] presente no repositório [laboratorio-de-praticas-2025-2/banco-de-dados](https://github.com/laboratorio-de-praticas-2025-2/banco-de-dados)
 (Iremos mantê-lo atualizado caso ocorram mudanças)
 
-## 📝 Recomendações Gerais:
-- As estruturas e relações de tabelas deste banco **não devem ser alteradas** sem a autorização do time de dados.
-- No ambiente de <i><b>desenvolvimento</b></i>, todos os usuários possuem acesso liberado para inserções e remoções de dados. Caso necessário, esses acessos poderão ser limitados...
-- Recomendamos que o desenvolvimento seja iniciado sempre pelo banco local, pois ele oferece maior liberdade para testes e inserções de dados, menor latência nas consultas e a possibilidade de trabalhar com dados inconsistentes ou incompletos sem impacto no ambiente principal ou de desenvolvimento.
+## Maneiras de se conectar e visualizar os dados:
+### 1. Utilizando um Software de gerenciamento de Banco de dados (HeidiSQL, Dbeaver, MySQL Workbench....):
+#### HeidiSQL:
+![Exemplo de Conexão no HeidiSQL](v2/imgs/exemplo-conexao-heidisql.png)
+#### Dbeaver:
+![Exemplo de Conexão no MySQLWorkbench](v2/imgs/exemplo-conexao-dbeaver.png)
+### 2. Utilizando o phpMyAdmin pela web:
+<strong>Link: [phpmyadmin](https://phpmyadmin.alwaysdata.com/)</strong> <br>
+```yaml
+MySQL user: Utilizar o user disponibilizado pelo PM do seu produto
+Password: Utilizar a senha disponibilizada pelo PM do seu produto
+```
 
-## Exemplos de Conexão no banco de Desenvolvimento (HeidiSQL):
-![alt text](v2/imgs/exemplo-conexao.png)
-![alt text](v2/imgs/exemplo-select.png)
+![Exemplo de Conexão no phpMyAdmin](v2/imgs/exemplo-conexao-phpmyadmin.png)
+
+### 3. Pelo código em uma aplicação backend utilizando as credenciais de acesso fornecidas
