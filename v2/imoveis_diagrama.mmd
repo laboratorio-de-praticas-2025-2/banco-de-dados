@@ -30,6 +30,7 @@ IMOVEIS {
   REAL longitude
   TEXT tipo_negociacao
   INTEGER usuario_id FK
+  TIMESTAMP data_update_status
 }
 CASA {
   INTEGER id PK
@@ -66,6 +67,7 @@ PUBLICIDADE {
   TEXT conteudo
   TEXT url_imagem
   INTEGER usuario_id FK
+  BOOLEAN ativo
 }
 IMAGEM_IMOVEL {
   INTEGER id PK
