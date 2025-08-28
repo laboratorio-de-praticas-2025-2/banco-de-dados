@@ -5,6 +5,16 @@
 - No ambiente de <i><b>desenvolvimento</b></i>, todos os usuários possuem acesso liberado para inserções e remoções de dados. Caso necessário, esses acessos poderão ser limitados...
 - Recomendamos que o desenvolvimento seja iniciado sempre pelo banco local, pois ele oferece maior liberdade para testes e inserções de dados, menor latência nas consultas e a possibilidade de trabalhar com dados inconsistentes ou incompletos sem impacto no ambiente principal ou de desenvolvimento.
 
+## Últimas Mudanças 
+
+- Adição do atributo ```tipo_negociacao``` na tabela IMOVEIS
+- Adição do atributo ```ativo``` na tabela BANNER_INDEX
+- Adição do atributo ```ativo``` na tabela PUBLICIDADE
+- Atualização do atributo ```status``` na tabela IMOVEIS para aceitar os valores 
+    - ```disponivel``` - ```indisponivel``` - ```vendido``` - ```locado```
+- Adição do atributo ```data_update_status``` na tabela IMOVEIS
+    - Esse atributo é populado por um trigger sempre que o atributo ```status``` é modificado 
+
 ## Diagrama:
 ![imagem do diagrama](v2/imgs/imoveis_diagrama.mmd.png)
 
