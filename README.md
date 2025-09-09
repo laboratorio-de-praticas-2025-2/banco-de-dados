@@ -7,6 +7,7 @@
 
 ## Últimas Mudanças 
 
+- *Banco foi Populado com dados de exemplo!*
 - Adição do atributo ```tipo_negociacao``` na tabela IMOVEIS
 - Adição do atributo ```ativo``` na tabela BANNER_INDEX
 - Adição do atributo ```ativo``` na tabela PUBLICIDADE
