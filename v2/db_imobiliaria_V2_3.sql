@@ -30,18 +30,18 @@ CREATE TABLE IF NOT EXISTS `banner_index` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Copiando dados para a tabela lp_imobiliaria.banner_index: ~10 rows (aproximadamente)
-DELETE FROM `banner_index`;
 /*!40000 ALTER TABLE `banner_index` DISABLE KEYS */;
 INSERT INTO `banner_index` (`id`, `url_imagem`, `descricao`, `usuario_id`, `ativo`) VALUES
 	(1, '886b7dc997ba22ea656fd7ddee74d25d.png', 'Banner de promoção', 1, 1),
-	(2, 'f09713a952f808e618746c2bf2865e80.png', 'Banner de terrenos', 1, 1),
-	(3, '1a353146b3d3f2f8c3c52e631168eeed.png', 'Banner de apartamentos', 1, 1),
+	(2, 'f09713a952f808e618746c2bf2865e80.png', 'Banner de terrenos', 4, 1),
+	(3, '1a353146b3d3f2f8c3c52e631168eeed.png', 'Banner de apartamentos', 8, 1),
 	(4, 'd15f4edb2802ea1281822c0b4f50b54a.png', 'Banner de casas', 1, 1),
-	(5, '1f6554ad5353aba45c784f4d4250c708.png', 'Banner de financiamento', 1, 1),
-	(6, '030c09d098ce5b6b09c2998435655157.png', 'Banner de aluguel', 1, 1),
+	(5, '1f6554ad5353aba45c784f4d4250c708.png', 'Banner de financiamento', 4, 1),
+	(6, '030c09d098ce5b6b09c2998435655157.png', 'Banner de aluguel', 8, 1),
 	(7, 'c1912c07760bb20937b76e75c0a0e9a4.png', 'Banner de lançamento', 1, 1),
-	(8, '1452bed35ae2c9b79caf6976be0ae134.png', 'Banner de rural', 1, 0),
-	(9, 'a0d918e7fecee043aa705da0e0b87547.png', 'Banner de estudantes', 1, 0),
+	(8, '1452bed35ae2c9b79caf6976be0ae134.png', 'Banner de rural', 4, 0),
+	(9, 'a0d918e7fecee043aa705da0e0b87547.png', 'Banner de estudantes', 8, 1),
+
 	(10, '52cf7d2ee1544c733c69c930f6327c69.png', 'Banner de condomínio', 1, 1);
 /*!40000 ALTER TABLE `banner_index` ENABLE KEYS */;
 
@@ -582,6 +582,7 @@ CREATE TABLE IF NOT EXISTS `imobiliaria` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Copiando dados para a tabela lp_imobiliaria.imobiliaria: ~1 rows (aproximadamente)
+
 DELETE FROM `imobiliaria`;
 /*!40000 ALTER TABLE `imobiliaria` DISABLE KEYS */;
 INSERT INTO `imobiliaria` (`id`, `nome`, `cnpj`, `telefone`, `email`, `endereco`, `cidade`, `estado`, `site`, `usuario_id`) VALUES
@@ -1271,6 +1272,82 @@ BEGIN
 	END IF;
 END//
 DELIMITER ;
+
+-- !!! PODE SER QUE ALGUMAS DAS SEGUINTES FUÇÕES POSSUAM INCOMPATIBILIDADE COM VERSÕES MAIS NOVAS MYSQL !!!
+-- !!! EM CASO DE ERRO NÃO EXECUTE AS SEGUINTES LINHAS E VEJA SE FUNCIONA A CRIAÇÃO LOCAL OU TENTE INSTALAR A VERSÃO  *10.11.13-MariaDB - MariaDB Server* !!!
+
+-- Criar View *estatisticasImoveisUsuarios*
+CREATE VIEW estatisticasImoveisUsuarios AS
+SELECT 
+        im.totalApartamentos,
+        im.totalCasas,
+        im.totalTerrenos,
+        im.totalVenda,
+        im.totalLocacao,
+        im.totalImoveis,
+        us.totalAdministradores,
+        us.totalVisitantes,
+        us.totalUsuarios
+    FROM (
+        SELECT  
+          SUM(CASE WHEN i.tipo = 'Apartamento' THEN 1 ELSE 0 END) AS totalApartamentos,
+          SUM(CASE WHEN i.tipo = 'Casa' THEN 1 ELSE 0 END) AS totalCasas,
+          SUM(CASE WHEN i.tipo = 'Terreno' THEN 1 ELSE 0 END) AS totalTerrenos,
+          SUM(CASE WHEN i.tipo_negociacao = 1 THEN 1 ELSE 0 END) AS totalVenda,
+          SUM(CASE WHEN i.tipo_negociacao = 2 THEN 1 ELSE 0 END) AS totalLocacao,
+          COUNT(1) as totalImoveis   
+        FROM imoveis i
+        WHERE i.status = 1
+    ) im
+    CROSS JOIN (
+        SELECT  
+          SUM(CASE WHEN f.nivel = 0 THEN 1 ELSE 0 END) AS totalAdministradores,
+          SUM(CASE WHEN f.nivel = 1 THEN 1 ELSE 0 END) AS totalVisitantes,
+          COUNT(1) as totalUsuarios   
+        FROM usuario f
+    ) us;
+
+-- Criar View *estatisticasVendas*
+CREATE VIEW estatisticasVendas AS
+    SELECT 
+    i.tipo AS tipoImovel,
+    COUNT(*) AS quantidade,
+    ROUND(100 * COUNT(*) / (SELECT COUNT(*) FROM imoveis WHERE status = 'vendido' 
+    AND data_update_status >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)), 2) 
+    AS porcentagem
+      FROM imoveis i
+      WHERE i.status = 'vendido' 
+      AND i.data_update_status >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    GROUP BY i.tipo;
+SELECT * FROM estatisticasVendas;
+
+-- Criar view *alugueisPorMes*
+CREATE VIEW alugueisPorMes AS
+SELECT 
+        m.mes,
+        t.tipo AS tipoImovel,
+        COALESCE(COUNT(i.id), 0) AS total
+    FROM (
+        -- gera os últimos 12 meses
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL seq MONTH), '%Y-%m') AS mes
+        FROM (
+            SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+            UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7
+            UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11
+        ) AS seqs
+    ) m
+    CROSS JOIN (
+        SELECT 'Apartamento' AS tipo
+        UNION ALL SELECT 'Casa'
+        UNION ALL SELECT 'Terreno'
+    ) t
+    LEFT JOIN imoveis i
+        ON i.tipo = t.tipo
+        AND i.status = 'locado'
+        AND DATE_FORMAT(i.data_update_status, '%Y-%m') = m.mes
+    GROUP BY m.mes, t.tipo
+    ORDER BY m.mes ASC, t.tipo; 
+
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
