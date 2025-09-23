@@ -5,6 +5,11 @@
 - No ambiente de <i><b>desenvolvimento</b></i>, todos os usuários possuem acesso liberado para inserções e remoções de dados. Caso necessário, esses acessos poderão ser limitados...
 - Recomendamos que o desenvolvimento seja iniciado sempre pelo banco local, pois ele oferece maior liberdade para testes e inserções de dados, menor latência nas consultas e a possibilidade de trabalhar com dados inconsistentes ou incompletos sem impacto no ambiente principal ou de desenvolvimento.
 
+## Versões
+- O banco de dados em produção está rodando na versão ```10.11.13-MariaDB```.
+
+- ⚠️ Atenção: ao executar queries localmente, podem surgir erros ou alertas caso a versão MySQL/MariaDB utilizada no ambiente local seja mais recente do que a versão do banco hospedado. Isso acontece devido a diferenças de sintaxe, funções e comportamentos entre versões distintas dos SGBDs. Sugerimos 
+
 ## Últimas Mudanças 
 
 - Adição do atributo ```tipo_negociacao``` na tabela IMOVEIS
