@@ -12,14 +12,8 @@
 
 ## Últimas Mudanças 
 
+- Adicição do atributo ativo na tabela USUARIO
 - *Banco foi Populado com dados de exemplo!*
-- Adição do atributo ```tipo_negociacao``` na tabela IMOVEIS
-- Adição do atributo ```ativo``` na tabela BANNER_INDEX
-- Adição do atributo ```ativo``` na tabela PUBLICIDADE
-- Atualização do atributo ```status``` na tabela IMOVEIS para aceitar os valores 
-    - ```disponivel``` - ```indisponivel``` - ```vendido``` - ```locado```
-- Adição do atributo ```data_update_status``` na tabela IMOVEIS
-    - Esse atributo é populado por um trigger sempre que o atributo ```status``` é modificado 
 
 ## Diagrama:
 ![imagem do diagrama](v2/imgs/imoveis_diagrama.mmd.png)
@@ -38,6 +32,7 @@
 | senha          | VARCHAR(255)                      | Senha criptografada                |
 | nivel          | TINYINT(1)                        | Nível de acesso do usuário, 0 = administrador, 1 = visitante         |
 | celular        | VARCHAR(20)                       | Número de celular do usuário       |
+| ativo          | TINYINT(1)     | Indica se o usuário está ativo (0 = não, 1 = sim) |
 
 </details>
 
