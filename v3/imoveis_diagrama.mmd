@@ -1,0 +1,119 @@
+erDiagram
+    IMOBILIARIA {
+        INT id PK
+        VARCHAR nome
+        VARCHAR cnpj
+        VARCHAR telefone
+        VARCHAR email
+        VARCHAR endereco
+        VARCHAR cidade
+        VARCHAR estado
+        VARCHAR site
+        INT usuario_id FK
+    }
+    IMOVEIS {
+        INT id PK
+        VARCHAR tipo
+        VARCHAR endereco
+        VARCHAR cidade
+        VARCHAR estado
+        DECIMAL preco
+        INT area
+        TEXT descricao
+        DATE data_cadastro
+        TINYINT murado
+        DECIMAL latitude
+        DECIMAL longitude
+        ENUM tipo_negociacao
+        ENUM status
+        INT usuario_id FK
+        TIMESTAMP data_update_status
+        TINYINT visibilidade_preco
+    }
+    CASA {
+        INT id PK
+        INT imovel_id FK
+        INT quartos
+        INT banheiros
+        INT vagas
+        TINYINT possui_piscina
+        TINYINT possui_jardim
+    }
+    TERRENO {
+        INT id PK
+        INT imovel_id FK
+    }
+    USUARIO {
+        INT id PK
+        VARCHAR nome
+        VARCHAR email
+        VARCHAR senha
+        TINYINT nivel
+        VARCHAR celular
+        TINYINT ativo
+        TIMESTAMP data_cadastro
+    }
+    BLOG {
+        INT id PK
+        VARCHAR titulo
+        TEXT conteudo
+        DATE data_publicacao
+        VARCHAR url_imagem
+        INT usuario_id FK
+    }
+    PUBLICIDADE {
+        INT id PK
+        VARCHAR titulo
+        TEXT conteudo
+        VARCHAR url_imagem
+        INT usuario_id FK
+        TINYINT ativo
+    }
+    IMAGEM_IMOVEL {
+        INT id PK
+        INT imovel_id FK
+        VARCHAR url_imagem
+        VARCHAR descricao
+    }
+    BANNER_INDEX {
+        INT id PK
+        VARCHAR url_imagem
+        VARCHAR descricao
+        TINYINT ativo
+        INT usuario_id FK
+    }
+    RECOMENDACAO_IMOVEL {
+        INT id PK
+        INT usuario_id FK
+        INT imovel_id FK
+        DATE data_visita
+    }
+    FAQ {
+        INT id PK
+        VARCHAR pergunta
+        VARCHAR resposta
+        INT usuario_id FK
+    }
+    AGENDAMENTOS {
+        INT id PK
+        INT id_usuario FK
+        DATETIME data_marcada
+        DATETIME data_create
+        INT id_imovel FK
+        TEXT mensagem
+        TINYINT concluido
+    }
+
+    USUARIO ||--o{ BLOG : publica
+    USUARIO ||--o{ IMOVEIS : cadastra
+    USUARIO ||--o{ PUBLICIDADE : cadastra
+    USUARIO ||--o{ BANNER_INDEX : cadastra
+    USUARIO ||--o{ IMOBILIARIA : altera
+    USUARIO ||--o{ RECOMENDACAO_IMOVEL : visita
+    USUARIO ||--o{ FAQ : cadastra
+    USUARIO ||--o{ AGENDAMENTOS : faz
+    IMOVEIS ||--o{ CASA : contem
+    IMOVEIS ||--o{ TERRENO : contem
+    IMOVEIS ||--o{ IMAGEM_IMOVEL : possui
+    IMOVEIS ||--o{ RECOMENDACAO_IMOVEL : e_visitado
+    IMOVEIS ||--o{ AGENDAMENTOS : agendado_para
