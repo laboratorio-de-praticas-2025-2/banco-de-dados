@@ -12,11 +12,12 @@
 
 ## Últimas Mudanças 
 
-- Adicição do atributo ativo na tabela USUARIO
-- *Banco foi Populado com dados de exemplo!*
+- Adição do atributo *data_cadastro* na tabela *usuario*
+- Adição de tabela *agendamentos*
+- Adição de views e procedures para time de Dashboard e Reports
 
 ## Diagrama:
-![imagem do diagrama](v2/imgs/imoveis_diagrama.mmd.png)
+![imagem do diagrama](v3/imgs/imoveis_diagrama.mmd.png)
 
 ## Estrutura:
 
@@ -224,6 +225,33 @@
 
 *Tabela para armazenar as postagens do blog*
 
+
+<br> 
+<details>
+<summary><strong>AGENDAMENTOS</strong></summary>
+
+| Nome da Coluna    | Tipo de Dado   | Descrição                              |
+|------------------|----------------|----------------------------------------|
+| id               | INT(11)       | Identificador único do agendamento     |
+| id_usuario       | INT(11)       | ID do usuário que fez o agendamento (referencia a tabela USUARIO) |
+| data_marcada     | DATETIME      | Data e hora marcada para o agendamento |
+| data_create      | DATETIME      | Data e hora de criação do agendamento (preenchido automaticamente com current_timestamp()) |
+| id_imovel        | INT(11)       | ID do imóvel relacionado ao agendamento (referencia a tabela IMOVEIS) |
+| mensagem         | TEXT          | Mensagem opcional do usuário sobre o agendamento |
+| concluido        | TINYINT(1)    | Status do agendamento: 0 = não concluído, 1 = concluído |
+
+**Relacionamentos:**
+- `id_usuario` → Referencia `usuario(id)` com ON DELETE CASCADE e ON UPDATE CASCADE
+- `id_imovel` → Referencia `imoveis(id)` com ON DELETE CASCADE e ON UPDATE CASCADE
+
+**Índices:**
+- `fk_agendamento_usuario` no campo `id_usuario`
+- `fk_agendamento_imovel` no campo `id_imovel`
+
+</details>
+
+*Tabela para armazenar os agendamentos de visitas aos imóveis*
+
 ## Ambientes
 
 ### 1. Produção
@@ -256,9 +284,9 @@ Para rodar localmente, basta criar um banco MySQL local e executar o script
 ## Maneiras de se conectar e visualizar os dados:
 ### 1. Utilizando um Software de gerenciamento de Banco de dados (HeidiSQL, Dbeaver, MySQL Workbench....):
 #### HeidiSQL:
-![Exemplo de Conexão no HeidiSQL](v2/imgs/exemplo-conexao-heidisql.png)
+![Exemplo de Conexão no HeidiSQL](v3/imgs/exemplo-conexao-heidisql.png)
 #### Dbeaver:
-![Exemplo de Conexão no MySQLWorkbench](v2/imgs/exemplo-conexao-dbeaver.png)
+![Exemplo de Conexão no MySQLWorkbench](v3/imgs/exemplo-conexao-dbeaver.png)
 ### 2. Utilizando o phpMyAdmin pela web:
 <strong>Link: [phpmyadmin](https://phpmyadmin.alwaysdata.com/)</strong> <br>
 ```yaml
@@ -266,6 +294,6 @@ MySQL user: Utilizar o user disponibilizado pelo PM do seu produto
 Password: Utilizar a senha disponibilizada pelo PM do seu produto
 ```
 
-![Exemplo de Conexão no phpMyAdmin](v2/imgs/exemplo-conexao-phpmyadmin.png)
+![Exemplo de Conexão no phpMyAdmin](v3/imgs/exemplo-conexao-phpmyadmin.png)
 
 ### 3. Pelo código em uma aplicação backend utilizando as credenciais de acesso fornecidas
