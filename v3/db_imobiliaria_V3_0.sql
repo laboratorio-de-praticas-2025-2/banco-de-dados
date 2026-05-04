@@ -17,6 +17,44 @@
 CREATE DATABASE IF NOT EXISTS `lp-imobiliaria_dev` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `lp-imobiliaria_dev`;
 
+-- Copiando estrutura para tabela lp-imobiliaria_dev.usuario
+CREATE TABLE IF NOT EXISTS `usuario` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`nome` varchar(100) NOT NULL,
+	`email` varchar(100) NOT NULL,
+	`senha` varchar(255) NOT NULL,
+	`nivel` tinyint(4) NOT NULL DEFAULT 1,
+	`celular` varchar(20) DEFAULT NULL,
+	`ativo` tinyint(1) NOT NULL DEFAULT 1 COMMENT '0 = inativo, 1 = ativo',
+	`data_cadastro` timestamp NOT NULL DEFAULT utc_timestamp() COMMENT 'Data em que o usuário se cadastrou (UTC)',
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Copiando estrutura para tabela lp-imobiliaria_dev.imoveis
+CREATE TABLE IF NOT EXISTS `imoveis` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`tipo` varchar(50) NOT NULL,
+	`endereco` varchar(255) NOT NULL,
+	`cidade` varchar(100) NOT NULL,
+	`estado` varchar(2) NOT NULL,
+	`preco` decimal(12,2) NOT NULL,
+	`area` int(11) NOT NULL,
+	`descricao` text NOT NULL,
+	`data_cadastro` date NOT NULL,
+	`murado` tinyint(1) NOT NULL,
+	`latitude` decimal(10,7) DEFAULT NULL,
+	`longitude` decimal(10,7) DEFAULT NULL,
+	`usuario_id` int(11) NOT NULL,
+	`tipo_negociacao` enum('venda','aluguel') NOT NULL DEFAULT 'venda',
+	`status` enum('disponivel','indisponivel','vendido','locado') NOT NULL DEFAULT 'disponivel',
+	`data_update_status` timestamp NULL DEFAULT NULL COMMENT 'Campo guarda o update do atributo status do imovel, atualizando para "vendido" vai ficar registrado que foi atualizado no determinado dia',
+	`visibilidade_preco` tinyint(1) NOT NULL DEFAULT 1 COMMENT '0 = preço oculto, 1 = preço visível',
+	PRIMARY KEY (`id`),
+	KEY `usuario_id` (`usuario_id`),
+	CONSTRAINT `imoveis_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- Copiando estrutura para tabela lp-imobiliaria_dev.agendamentos
 CREATE TABLE IF NOT EXISTS `agendamentos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -603,30 +641,6 @@ DELETE FROM `imobiliaria`;
 INSERT INTO `imobiliaria` (`id`, `nome`, `cnpj`, `telefone`, `email`, `endereco`, `cidade`, `estado`, `site`, `usuario_id`) VALUES
 	(1, 'Imobiliária Bortone', '26.196.890/0001-42', '1338223712', 'contato@grupobortone.com.br', 'Rua Tamekichi Takano, 713, Centro', 'Registro', 'SP', 'https://www.grupobortone.com.br/', 1);
 /*!40000 ALTER TABLE `imobiliaria` ENABLE KEYS */;
-
--- Copiando estrutura para tabela lp-imobiliaria_dev.imoveis
-CREATE TABLE IF NOT EXISTS `imoveis` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo` varchar(50) NOT NULL,
-  `endereco` varchar(255) NOT NULL,
-  `cidade` varchar(100) NOT NULL,
-  `estado` varchar(2) NOT NULL,
-  `preco` decimal(12,2) NOT NULL,
-  `area` int(11) NOT NULL,
-  `descricao` text NOT NULL,
-  `data_cadastro` date NOT NULL,
-  `murado` tinyint(1) NOT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(10,7) DEFAULT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `tipo_negociacao` enum('venda','aluguel') NOT NULL DEFAULT 'venda',
-  `status` enum('disponivel','indisponivel','vendido','locado') NOT NULL DEFAULT 'disponivel',
-  `data_update_status` timestamp NULL DEFAULT NULL COMMENT 'Campo guarda o update do atributo status do imovel, atualizando para "vendido" vai ficar registrado que foi atualizado no determinado dia',
-  `visibilidade_preco` tinyint(1) NOT NULL DEFAULT 1 COMMENT '0 = preço oculto, 1 = preço visível',
-  PRIMARY KEY (`id`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `imoveis_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Copiando dados para a tabela lp-imobiliaria_dev.imoveis: ~111 rows (aproximadamente)
 DELETE FROM `imoveis`;
@@ -1245,20 +1259,6 @@ INSERT INTO `terreno` (`id`, `imovel_id`) VALUES
 	(75, 112);
 /*!40000 ALTER TABLE `terreno` ENABLE KEYS */;
 
--- Copiando estrutura para tabela lp-imobiliaria_dev.usuario
-CREATE TABLE IF NOT EXISTS `usuario` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `senha` varchar(255) NOT NULL,
-  `nivel` tinyint(4) NOT NULL DEFAULT 1,
-  `celular` varchar(20) DEFAULT NULL,
-  `ativo` tinyint(1) NOT NULL DEFAULT 1 COMMENT '0 = inativo, 1 = ativo',
-  `data_cadastro` timestamp NOT NULL DEFAULT utc_timestamp() COMMENT 'Data em que o usuário se cadastrou (UTC)',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- Copiando dados para a tabela lp-imobiliaria_dev.usuario: ~26 rows (aproximadamente)
 DELETE FROM `usuario`;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
@@ -1702,7 +1702,7 @@ FROM (
         ) AS vendasPorTipo       
 ) base;
 
---- Dados para relatorio (Locacoes) (VAI SER DELETADO COM REFATORACAO DO REPORTS)
+-- Dados para relatorio (Locacoes) (VAI SER DELETADO COM REFATORACAO DO REPORTS)
 CREATE VIEW dadosRelatorioLocacoes AS
 WITH meses AS (
      SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL (11 - seq) MONTH), '%Y-%m') AS mes
